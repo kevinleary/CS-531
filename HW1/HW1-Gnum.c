@@ -22,7 +22,7 @@ Running instructions:
 void inputStrings(char str[10][MAXSIZE]);
 int checkDuplicate(char s1[], char s2[]);
 int checkStringLen(char s[]);
-int checkLegalCharacters(char s[][]);
+int checkLegalCharacters(char s[]);
 
 int main() {
 
@@ -56,16 +56,13 @@ int main() {
     return 0;
 }
 
-//not working... need to send iver the array and the associated characters
-int checkLegalCharacters(char s[][]){
-    int i = 0;
-    for (i = 0; i < strlen(s); i++) {
-        if (s[i] == '!' || s[i] == '@' || s[i] == '#' || s[i] == '$' || s[i] == '%' || s[i] == '^' || s[i] == '(' || s[i] == ')') {
-            printf("Error: %c is an illegal character - please re-enter\n", s[i]);
+int checkLegalCharacters(char s[]){
+    int j = 0;
+    for (j = 0; j < strlen(s); j++) {
+        if (s[j] == '!' || s[j] == '@' || s[j] == '#' || s[j] == '$' || s[j] == '%' || s[j] == '^' || s[j] == '(' || s[j] == ')') {
+            printf("Error: %c is an illegal character - please re-enter\n", s[j]);
             return 1; 
-        } else {
-            return 0;
-        }
+        } 
     }
     return 0;
 }
@@ -106,19 +103,7 @@ void inputStrings(char str[10][MAXSIZE]) {
         fgets(str[i], MAXSIZE, stdin);    
 
         printf("String length is: %zu\n", strlen(str[i]));
-        // Check if the string is duplicate
-        // for (j = 0; j < i; j++) {
-        //     if (strcmp(str[i], str[j]) == 0) {
-        //         printf("Error: duplicate string - please re-enter\n");
-        //         dup = 1;
-        //         break;
-        //     }
-        // } 
-        // // If the string is duplicate, re-prompt the user
-        // if (dup) {
-        //     i--;
-        //     continue;
-        // } 
+
         if (checkDuplicate(str[i-1], str[i]) == 0){
             i--;
             continue;
@@ -131,7 +116,7 @@ void inputStrings(char str[10][MAXSIZE]) {
         }
 
         // Check legal characters
-        if (checkLegalCharacters(str[i][j]) == 1){
+        if (checkLegalCharacters(str[i]) == 1){
             i--;
             continue;
         }
