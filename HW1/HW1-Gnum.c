@@ -16,6 +16,7 @@ Running instructions:
 
 #include <stdio.h> 
 #include <string.h>
+#include <stdlib.h>
 
 #define MAXSIZE 26
 
@@ -23,37 +24,80 @@ void inputStrings(char str[10][MAXSIZE]);
 int checkDuplicate(char s1[], char s2[]);
 int checkStringLen(char s[]);
 int checkLegalCharacters(char s[]);
+int calculateASCII(char str[10][MAXSIZE]);
+void outputStringComp(char str[10][MAXSIZE]);
 
 int main() {
 
     char str[10][MAXSIZE];
 
     inputStrings(str);
-    /*
-    printf("Enter a String: ");
-    scanf("%[^\n]s", str);    // %[^\n]s - allows for spaces in input   
-    if( strlen(str) < 2) {
-        printf("Error: string too few characters - please re-enter\n");
-        // reprompt
-    } else if ( strlen(str) > 25)
-    {
-        printf("Error: string too many characters - please re-enter\n");
-        //reprompt
-    }
-    
-    for (int i = 0; i < strlen(str); i++) {
-        if (str[i] == '!' || str[i] == '@' || str[i] == '#' || str[i] == '$' || str[i] == '%' || str[i] == '^' || str[i] == '(' || str[i] == ')') {
-          printf("Error: %c is an illegal character - please re-enter\n", str[i]);
-          //reprompt
-          break;
-        }
-    }
+    outputStringComp(str);
 
-    printf("string is: %s\n", str);
-    printf("String length is: %zu\n", strlen(str));
-    printf("\n");*/
+    // calculateASCII(str);
 
     return 0;
+}
+
+
+void outputStringComp(char str[10][MAXSIZE]) {
+
+    // int *cmp_total = 0;
+    // int temp = 0;
+
+    // //iterate through and compare strings
+    // for (int i = 0; i < 10; i++) {
+    //     temp = strcmp(str[i], str[i+1]);
+
+    //     printf("Output of string comparison is: %d\n", temp);
+    // }
+
+    //doesn't work - segmentation fault
+    // int n = sizeof(str) / sizeof(str[0]);    
+    printf("Here %s\n", str[0][MAXSIZE]);
+
+    // for (int i = 0; i < n; i++) {
+    //     printf("%s\n",str[n]);
+    //     for (int j = i + 1; j < n; j++) {
+    //         printf("%s\n",str[n]);
+    //         if (strcmp(str[i], str[j]) > 0) {
+    //             printf("%s\n",str[n]);
+    //             char *temp = str[i];
+    //             str[i] = str[j];
+    //             str[j] = temp;
+    //         }
+    //     }
+    // }
+
+    //printing the list
+    // for (int i = 0; i < 10; i++) {
+    //     printf("%s\n", str[i]);
+    // }
+
+}
+
+int calculateASCII(char str[10][MAXSIZE]) {
+
+    // Create an array to store the ASCII values
+    // int *ascii_values = malloc(sizeof(int) * strlen(char_array));
+    int ascii_values_chars[10][MAXSIZE];
+    int *ascii_values_total = malloc(sizeof(int) * strlen(str));
+
+    // Iterate through the strings 
+    // Nested for loop = o(n)^2 ... I know- inefficient! 
+    for (int i = 0; i < 10; i++) {
+        
+        // Iterate through the character array and convert each character to its ASCII value
+        for (int j = 0; j < strlen(str[i]); j++) {
+            ascii_values_chars[i][j] = (int)str[i][j];
+            printf("ASCII Value is of %c is %d\n", str[i][j], ascii_values_chars[i][j]);
+            ascii_values_total[i] += ascii_values_chars[i][j];
+        }
+        printf("End of string\n");
+        printf("Total ASCII Value of string %d is %d\n", i, ascii_values_total[i]);
+    }
+
+    return ascii_values_total;
 }
 
 int checkLegalCharacters(char s[]){
