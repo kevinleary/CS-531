@@ -26,15 +26,16 @@ int checkStringLen(char s[]);
 int checkLegalCharacters(char s[]);
 int calculateASCII(char str[10][MAXSIZE]);
 void outputStringComp(char str[10][MAXSIZE]);
+void ascendingSort(char sortOrder, str[10]][MAXSIZE]); // - need to define this then done!
 
 int main() {
 
     char str[10][MAXSIZE];
 
     inputStrings(str);
+    // calculateASCII(str);
     outputStringComp(str);
 
-    // calculateASCII(str);
 
     return 0;
 }
@@ -42,37 +43,25 @@ int main() {
 
 void outputStringComp(char str[10][MAXSIZE]) {
 
-    // int *cmp_total = 0;
-    // int temp = 0;
 
-    // //iterate through and compare strings
-    // for (int i = 0; i < 10; i++) {
-    //     temp = strcmp(str[i], str[i+1]);
+    //works!
+    // Iterate through the strings 
+    // Nested for loop = o(n)^2 ... I know- inefficient! 
+    for (int i = 0; i < 10; i++) {
+        for (int j = 0; j < 10; j++) {
+            if (strcmp(str[i], str[j]) > 0) {
+                char temp[MAXSIZE];
+                strcpy(temp, str[i]);
+                strcpy(str[i], str[j]);
+                strcpy(str[j], temp);
+            }
+        }
+    }
 
-    //     printf("Output of string comparison is: %d\n", temp);
-    // }
-
-    //doesn't work - segmentation fault
-    // int n = sizeof(str) / sizeof(str[0]);    
-    printf("Here %s\n", str[0][MAXSIZE]);
-
-    // for (int i = 0; i < n; i++) {
-    //     printf("%s\n",str[n]);
-    //     for (int j = i + 1; j < n; j++) {
-    //         printf("%s\n",str[n]);
-    //         if (strcmp(str[i], str[j]) > 0) {
-    //             printf("%s\n",str[n]);
-    //             char *temp = str[i];
-    //             str[i] = str[j];
-    //             str[j] = temp;
-    //         }
-    //     }
-    // }
-
-    //printing the list
-    // for (int i = 0; i < 10; i++) {
-    //     printf("%s\n", str[i]);
-    // }
+    // printing the list
+    for (int i = 0; i < 10; i++) {
+        printf("%s", str[i]);
+    }
 
 }
 
