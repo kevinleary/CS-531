@@ -24,9 +24,9 @@ void inputStrings(char str[10][MAXSIZE]);
 int checkDuplicate(char s1[], char s2[]);
 int checkStringLen(char s[]);
 int checkLegalCharacters(char s[]);
-int calculateASCII(char str[10][MAXSIZE]);
+// int calculateASCII(char str[10][MAXSIZE]);
 void outputStringComp(char str[10][MAXSIZE]);
-void ascendingSort(char sortOrder, str[10]][MAXSIZE]); // - need to define this then done!
+void ascendingSort(char str[10][MAXSIZE]); // - need to define this then done!
 
 int main() {
 
@@ -35,18 +35,69 @@ int main() {
     inputStrings(str);
     // calculateASCII(str);
     outputStringComp(str);
+    ascendingSort(str);
 
 
     return 0;
 }
 
+void ascendingSort(char str[10][MAXSIZE]) {
 
-void outputStringComp(char str[10][MAXSIZE]) {
+    char *ascending;
+    // char *sortOrder; 
+    int sortOrder;
+    //get ascending or descending
+    for (int i = 0; i < 1; i++) {
+        printf("Print character strings in Ascending or Descending order...\nEnter 'A' for Ascending or 'D' for Descending: ");
+        // fgets(ascending, MAXSIZE, stdin);
+        scanf("%d", &sortOrder);
+        //infinite loop?
+        if ( sortOrder == 'A' || sortOrder == 'a' ) {
+            // strcpy(sortOrder, "A");
+            sortOrder = 0;
+        } else if (strcmp(ascending, "D") == 0 || strcmp(ascending,"d") == 0) {
+            // strcpy(sortOrder, "D");
+            sortOrder = 1;
+        } else {
+            i--;
+            continue;
+        }
+    }
 
+    printf("Made it here\n");
+    //works!
+    // Iterate through the strings 
+    // Nested for loop that iterates through everything = o(n)^2 ... I know- inefficient! 
+    for (int i = 0; i < 10; i++) {
+        for (int j = 0; j < 10; j++) {
+            if (strcmp(str[i], str[j]) < 0 && sortOrder == 0) {
+                char temp[MAXSIZE];
+                strcpy(temp, str[i]);
+                strcpy(str[i], str[j]);
+                strcpy(str[j], temp);
+            }
+
+            if (strcmp(str[i], str[j]) > 0 && sortOrder == 1) {
+                char temp[MAXSIZE];
+                strcpy(temp, str[i]);
+                strcpy(str[i], str[j]);
+                strcpy(str[j], temp);
+            }
+        }
+    }
+
+    // printing the list
+    for (int i = 0; i < 10; i++) {
+        printf("%s", str[i]);
+    }
+    
+}
+
+void outputStringComp(char str[10][MAXSIZE]) { 
 
     //works!
     // Iterate through the strings 
-    // Nested for loop = o(n)^2 ... I know- inefficient! 
+    // Nested for loop that iterates through everything = o(n)^2 ... I know- inefficient! 
     for (int i = 0; i < 10; i++) {
         for (int j = 0; j < 10; j++) {
             if (strcmp(str[i], str[j]) > 0) {
@@ -65,7 +116,7 @@ void outputStringComp(char str[10][MAXSIZE]) {
 
 }
 
-int calculateASCII(char str[10][MAXSIZE]) {
+/*int calculateASCII(char str[10][MAXSIZE]) {
 
     // Create an array to store the ASCII values
     // int *ascii_values = malloc(sizeof(int) * strlen(char_array));
@@ -87,7 +138,7 @@ int calculateASCII(char str[10][MAXSIZE]) {
     }
 
     return ascii_values_total;
-}
+}*/
 
 int checkLegalCharacters(char s[]){
     int j = 0;
