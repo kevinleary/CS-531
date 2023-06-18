@@ -20,64 +20,86 @@ Running instructions:
 
 #define MAXSIZE 26
 
+//Adhered to UDF and also added some helper functions...
 void inputStrings(char str[10][MAXSIZE]);
 int checkDuplicate(char s1[], char s2[]);
 int checkStringLen(char s[]);
 int checkLegalCharacters(char s[]);
-// int calculateASCII(char str[10][MAXSIZE]);
-void outputStringComp(char str[10][MAXSIZE]);
-void ascendingSort(char str[10][MAXSIZE]); // - need to define this then done!
+void ascendingSort(char sortOrder, char str[10][MAXSIZE]);
+char getSortOrder();
+void displayHighestandLowest(char sortOrder, char str[10][MAXSIZE]);
+
 
 int main() {
 
+    // 2D char array of 10 x 26 (MAXSIZE)
     char str[10][MAXSIZE];
 
+    //Calling all functions
     inputStrings(str);
-    // calculateASCII(str);
-    outputStringComp(str);
-    ascendingSort(str);
+    char sortOrder = getSortOrder();
+    ascendingSort(sortOrder, str);
+    displayHighestandLowest(sortOrder, str);
 
 
     return 0;
 }
 
-void ascendingSort(char str[10][MAXSIZE]) {
+// Helper function to display highest and lowest ASCII values
+void displayHighestandLowest(char sortOrder, char str[10][MAXSIZE]){
 
-    char *ascending;
-    // char *sortOrder; 
-    int sortOrder;
+    // We already know highest and lowest because its sorted from the ascending sort function
+    if ( sortOrder == 'A') {
+        printf("\nString with lowest ASCII value: %s", str[0]);
+        printf("String with highest ASCII value: %s", str[9]);
+    } else {
+        printf("\nString with lowest ASCII value: %s", str[9]);
+        printf("String with highest ASCII value: %s", str[0]);
+    } 
+
+}
+
+// Helper function to determine whether the array will be output in ascending or descending order
+char getSortOrder(){
+    
+    char sortOrder;
     //get ascending or descending
     for (int i = 0; i < 1; i++) {
         printf("Print character strings in Ascending or Descending order...\nEnter 'A' for Ascending or 'D' for Descending: ");
-        // fgets(ascending, MAXSIZE, stdin);
-        scanf("%d", &sortOrder);
-        //infinite loop?
+        scanf("%c", &sortOrder);
+
+        //Eliminate the upper or lower case issues
         if ( sortOrder == 'A' || sortOrder == 'a' ) {
-            // strcpy(sortOrder, "A");
-            sortOrder = 0;
-        } else if (strcmp(ascending, "D") == 0 || strcmp(ascending,"d") == 0) {
-            // strcpy(sortOrder, "D");
-            sortOrder = 1;
-        } else {
+            sortOrder = 'A';
+        } else if ( sortOrder == 'D' || sortOrder == 'd' ) {
+            sortOrder = 'D';
+        } else {        // - This is for error input
             i--;
+            printf("\nError: %c is not 'A' or 'D' - try again...\n", sortOrder);
+            //Empty Character constant
+            sortOrder = '\0';
             continue;
         }
     }
+    return sortOrder;
+}
 
-    printf("Made it here\n");
-    //works!
+// Function that sorts the array
+void ascendingSort(char sortOrder, char str[10][MAXSIZE]) {
+
     // Iterate through the strings 
     // Nested for loop that iterates through everything = o(n)^2 ... I know- inefficient! 
     for (int i = 0; i < 10; i++) {
         for (int j = 0; j < 10; j++) {
-            if (strcmp(str[i], str[j]) < 0 && sortOrder == 0) {
+            if ( (strcmp(str[i], str[j]) < 0) && (sortOrder == 'A') ) { // - Check for the sort 
+                //Classic temp swapping and holding
                 char temp[MAXSIZE];
                 strcpy(temp, str[i]);
                 strcpy(str[i], str[j]);
                 strcpy(str[j], temp);
             }
 
-            if (strcmp(str[i], str[j]) > 0 && sortOrder == 1) {
+            if ( (strcmp(str[i], str[j]) > 0) && (sortOrder == 'D') ) {
                 char temp[MAXSIZE];
                 strcpy(temp, str[i]);
                 strcpy(str[i], str[j]);
@@ -86,60 +108,20 @@ void ascendingSort(char str[10][MAXSIZE]) {
         }
     }
 
-    // printing the list
+    // print the list back with headings
+    if (sortOrder == 'A') {
+        printf("\nAscending Order:\n\n");
+    } else {
+        printf("\nDescending Order:\n\n");
+    }
+
     for (int i = 0; i < 10; i++) {
         printf("%s", str[i]);
     }
     
 }
 
-void outputStringComp(char str[10][MAXSIZE]) { 
-
-    //works!
-    // Iterate through the strings 
-    // Nested for loop that iterates through everything = o(n)^2 ... I know- inefficient! 
-    for (int i = 0; i < 10; i++) {
-        for (int j = 0; j < 10; j++) {
-            if (strcmp(str[i], str[j]) > 0) {
-                char temp[MAXSIZE];
-                strcpy(temp, str[i]);
-                strcpy(str[i], str[j]);
-                strcpy(str[j], temp);
-            }
-        }
-    }
-
-    // printing the list
-    for (int i = 0; i < 10; i++) {
-        printf("%s", str[i]);
-    }
-
-}
-
-/*int calculateASCII(char str[10][MAXSIZE]) {
-
-    // Create an array to store the ASCII values
-    // int *ascii_values = malloc(sizeof(int) * strlen(char_array));
-    int ascii_values_chars[10][MAXSIZE];
-    int *ascii_values_total = malloc(sizeof(int) * strlen(str));
-
-    // Iterate through the strings 
-    // Nested for loop = o(n)^2 ... I know- inefficient! 
-    for (int i = 0; i < 10; i++) {
-        
-        // Iterate through the character array and convert each character to its ASCII value
-        for (int j = 0; j < strlen(str[i]); j++) {
-            ascii_values_chars[i][j] = (int)str[i][j];
-            printf("ASCII Value is of %c is %d\n", str[i][j], ascii_values_chars[i][j]);
-            ascii_values_total[i] += ascii_values_chars[i][j];
-        }
-        printf("End of string\n");
-        printf("Total ASCII Value of string %d is %d\n", i, ascii_values_total[i]);
-    }
-
-    return ascii_values_total;
-}*/
-
+// Function that checks for legal characters as defined in the assignment
 int checkLegalCharacters(char s[]){
     int j = 0;
     for (j = 0; j < strlen(s); j++) {
@@ -151,6 +133,7 @@ int checkLegalCharacters(char s[]){
     return 0;
 }
 
+// Function that checks for the string length as defined in the assignment
 int checkStringLen(char s[]){
     if (strlen(s) == 1) {
         printf("Error: string is empty - please re-enter\n");
@@ -176,6 +159,7 @@ int checkDuplicate(char s1[], char s2[]){
     }
 }
 
+// Function where all strings are input. Calls the check functions to meet assignment requirements
 void inputStrings(char str[10][MAXSIZE]) {
 
     int dup = 0;
@@ -206,15 +190,3 @@ void inputStrings(char str[10][MAXSIZE]) {
         }
     }
 }
-
-
-/*
-
-
-void inputStings() //Prompt the user for 10 character strings 2 points
-void checkStringLen() //Ensure string length within [2..25] 1 point
-int checkLegalCharacters() //Ensure no illegal characters: ’!’, ’@’, ’#’, ’$’, ‘%’, ‘^’, ’(’, or’)’. 2 point
-void checkDuplicate() //Ensure no duplicate strings 1 point
-void ascendingSort(char sortOrder) //Sort and display the output
-
-*/
