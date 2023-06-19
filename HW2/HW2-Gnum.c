@@ -28,6 +28,12 @@ struct address_t *head = NULL;
 
 //Functions here
 /*
+
+For linked list need:
+push()
+pop()
+
+Per the rurbric:
 1) Add address
 2) Look up address
 3) Update address
@@ -36,6 +42,8 @@ struct address_t *head = NULL;
 6) Display aliases for location
 7) Save to file
 8) Quit 
+
+Also need a populate list function
 */
 
 int main() {
@@ -47,18 +55,54 @@ int main() {
     if (address_file == NULL) {
         printf("Error opening file.\n");
         return 1;
-    }   
-    //TESTING reading into struct
-    struct address_t *test= (struct address_t*)malloc(sizeof(struct address_t));
+    }  
+    
+     
+    //need starter
+    // struct address_t *ptr = head;
 
     // Read the contents of the file line by line.
     char line[100];
-    int i = 0;
-    // while (fgets(line, sizeof(line), address_file)) {
+
+    while (fgets(line, sizeof(line), address_file)) {
+        struct address_t *test= (struct address_t*)malloc(sizeof(struct address_t));
+
+        sscanf(line, "%d.%d.%d.%d %s\n", &test->octet[0], &test->octet[1], &test->octet[2], &test->octet[3], test->alias);
+        // printf("%d.%d.%d.%d %s\n", test->octet[0], test->octet[1], test->octet[2], test->octet[3], test->alias);
+        test->next = head;
+        head = test;
+    }
+
+    struct address_t *ptr = head;
+    
+    while (ptr != NULL) {
+        printf("%d.%d.%d.%d %s\n", ptr->octet[0], ptr->octet[1], ptr->octet[2], ptr->octet[3], ptr->alias);
+        ptr = ptr->next;
+    }
+
     // while (fgets(address_file, "%d.%d.%d.%d %s", &test->octet[0], &test->octet[1], &test->octet[2], &test->octet[3], &test->alias)) {
-    fscanf(address_file, "%d.%d.%d.%d %s\n", &test->octet[0], &test->octet[1], &test->octet[2], &test->octet[3], test->alias);
-    printf("%d.%d.%d.%d %s\n", test->octet[0], test->octet[1], test->octet[2], test->octet[3], test->alias);
-        // printf("%s\n", line);
+    // fscanf(address_file, "%d.%d.%d.%d %s\n", &test->octet[0], &test->octet[1], &test->octet[2], &test->octet[3], test->alias);
+    // printf("%d.%d.%d.%d %s\n", test->octet[0], test->octet[1], test->octet[2], test->octet[3], test->alias);
+    // test->next = head;
+    // head = test;
+    //create new? 
+
+
+
+    // struct test_struct *create_list(intval) { 
+    //     printf("\ncreatinglistwithheadnodeas[%d]\n",val); 
+    //     struct test_struct *ptr = (struct test_struct*)m alloc(sizeof(struct test_struct));
+    //      if(NULL==ptr) { 
+    //          printf("\nNodecreationfailed\n"); 
+    //          returnNULL; 
+    //     } 
+    //     ptr->val=val; 
+    //     ptr->next=NULL; 
+    //     head=curr=ptr; 
+    //     return ptr; 
+    // }
+    
+    // printf("%s\n", line);
     //   i=0;
         // i++;
     // }   
