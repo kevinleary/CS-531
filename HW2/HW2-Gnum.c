@@ -28,6 +28,7 @@ struct address_t *head = NULL;
 
 void createListFromFile();
 void displayList();
+void addAddress();
 //Functions here
 /*
 
@@ -36,7 +37,7 @@ push()
 pop()
 
 Per the rurbric:
-1) Add address
+1) Add address - halfway done
 2) Look up address
 3) Update address
 4) Delete address
@@ -53,9 +54,38 @@ int main() {
     //Start with file list...
     createListFromFile();
 
+    // addAddress();
+    addAddress();
     displayList();
 
     return 0;
+}
+
+void addAddress() {
+        
+    // Read the contents of the file line by line.
+    // char line[100];
+    char ip[16];
+    char alias[10];
+    // while (fgets(line, sizeof(line), address_file)) {
+    struct address_t *test= (struct address_t*)malloc(sizeof(struct address_t));
+    
+    //Get input - first IP address then alias
+    printf("Enter IPv4 Address: ");
+    fgets(ip, 17, stdin);  
+    // ip[strlen(ip) - 1] = 0; //this removes the newline from the end of the string - THIS FUCKS UP THE STRING
+
+    printf("Enter a maximum 10 digit alias for IPv4 Address %s : ", ip[strlen(ip) - 1]);
+    fgets(alias, 12, stdin);  
+    alias[strlen(alias) - 1] = 0;
+
+    //parse input
+    sscanf(ip, "%3d.%3d.%3d.%3d\n", &test->octet[0], &test->octet[1], &test->octet[2], &test->octet[3]);
+    sscanf(alias, "%s\n", test->alias);
+    //Point to next memory location
+    test->next = head;
+    head = test;
+        
 }
 
 void createListFromFile() {
