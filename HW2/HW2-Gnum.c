@@ -30,6 +30,7 @@ void createListFromFile();
 void displayList();
 void addAddress();
 void lookUpAddress();
+void updateAddress();
 //Functions here
 /*
 
@@ -40,7 +41,7 @@ pop()
 Per the rurbric:
 1) Add address - almost done
 2) Look up address - almost done
-3) Update address
+3) Update address - starting
 4) Delete address
 5) Display list - almost done 
 6) Display aliases for location
@@ -63,8 +64,15 @@ int main() {
     return 0;
 }
 
+void updateAddress() {
+
+    //searching will be the same as the look-up it will just do something different when it finds it
+    //I think that lookup should be reused here
+}
+
 void lookUpAddress() {
 
+    //this might need to return an int for usage in update and delete address functions
     char alias[50];
     struct address_t *ptr = head;
     struct address_t *tmp = NULL;
@@ -80,7 +88,7 @@ void lookUpAddress() {
     sscanf(alias, "%s\n", alias);
     //Iterate through all values to find searched value in ptr
     while(ptr != NULL) {
-        printf("%d", strcmp(ptr->alias, alias));
+        // printf("%d", strcmp(ptr->alias, alias));
         if( strcmp(ptr->alias, alias) == 0 ) {
             printf("\nALIAS FOUND!\n");
             printf("The address for alias:%s is %d.%d.%d.%d\n", ptr->alias, ptr->octet[0], ptr->octet[1], ptr->octet[2], ptr->octet[3]);
@@ -88,7 +96,8 @@ void lookUpAddress() {
         }
         else {
             // tmp = ptr;
-            printf(".%s", ptr->alias);
+            // printf(".%s", ptr->alias);
+            //TODO: REPROMPT, DISPLAY ERROR MESSAGE, REDISPLAY MENU
             ptr = ptr->next;
         }
     }
