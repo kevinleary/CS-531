@@ -6,19 +6,13 @@ G01357635
 /*
 Running instructions: 
  1. Open terminal 
- 2. `gcc -o HW2-Gnum HW2-Gnum.c`
- 3. ./HW2-Gnum
+ 2. `gcc -o HW3-Gnum HW3-Gnum.c`
+ 3. ./HW3-Gnum
 
  OR 
 
  1. use the runner.sh
 */
-
-
-//COMMENTS FROM HW2
-//The address and alias needs to be taken in the same line, not separately. 
-// The update address function does not check for duplicates and just removes any duplicates previously present to accomodate the new one. \
-//Partial credits were deducted for these.
 
 
 #include <stdio.h> 
@@ -229,7 +223,7 @@ void updateAddress() {
     //searching will be the same as the look-up it will just do something different when it finds it
     //I think that lookup should be reused here
     // char alias[] = lookUpAddress();
-    int exit = 0;
+    int exit, dup = 0;
     char ip[17];
     struct address_t *found = lookUpAddress();
     struct address_t *ptr = head;
@@ -256,11 +250,12 @@ void updateAddress() {
 
             }
 
-            while (ptr != NULL) {
+            while ( ptr != NULL ) {
             // check all octets 
 
                 if (update->octet[0] == ptr->octet[0] && update->octet[1] == ptr->octet[1] && update->octet[2] == ptr->octet[2] && update->octet[3] == ptr->octet[3]) {
-                    printf("Address is a duplicate! Please re-enter a new adress for alias %s", found->alias);
+                    printf("Address is a duplicate! Please re-enter a new adress for alias %s\n", found->alias);
+                    dup = 1;
                     break;
                 } else {
                     ptr = ptr->next;
@@ -269,10 +264,12 @@ void updateAddress() {
             }
         }
 
-        printf("Alias %s IPv4 address %d.%d.%d.%d is now %d.%d.%d.%d\n", found->alias, found->octet[0], found->octet[1], found->octet[2], found->octet[3], update->octet[0], update->octet[1], update->octet[2], update->octet[3]);
-        //set new octet values
-        for (int i = 0; i < 4; i++) {
-            found->octet[i] = update->octet[i];
+        if ( dup != 1 ) {
+            printf("Alias %s IPv4 address %d.%d.%d.%d is now %d.%d.%d.%d\n", found->alias, found->octet[0], found->octet[1], found->octet[2], found->octet[3], update->octet[0], update->octet[1], update->octet[2], update->octet[3]);
+            //set new octet values
+            for (int i = 0; i < 4; i++) {
+                found->octet[i] = update->octet[i];
+            }
         }
 
     }
@@ -311,8 +308,6 @@ struct address_t* lookUpAddress() {
     return NULL;
 }
 
-
-//TODO: Fix duplicate
 //When addAddress is first selection it makes the menu reprompt and auto populates a garbage address - mind boggling (maybe only on the mac?)
 void addAddress() {
         
