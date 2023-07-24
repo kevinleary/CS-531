@@ -312,18 +312,18 @@ struct address_t* lookUpAddress() {
 }
 
 
-//TODO: Need to make this work on one line
-
-//When addAddress is first selection it makes the menu reprompt and auto populates a garbage address - mind boggling
+//TODO: Fix duplicate
+//When addAddress is first selection it makes the menu reprompt and auto populates a garbage address - mind boggling (maybe only on the mac?)
 void addAddress() {
         
     char ip[17];
-    char alias[50];     // I could set fgets() character buffer to 11 but then it just cuts the input off which doesnt follow the rubric
+    char alias[50];
     char ipAlias[50];
     int exit, reprompt, iter = 0;
     struct address_t *test= (struct address_t*)malloc(sizeof(struct address_t));
     struct address_t *ptr = head;
     
+    //working...
     while (exit != 1) {
         //Get IP and alias
         printf("Enter IPv4 Address followed by a 10 character Alias: ");
@@ -334,7 +334,6 @@ void addAddress() {
         for (int i = 0; i < 4; i++) {
             if ( test->octet[i] > 255 || test->octet[i] < 0 ) {
                 printf("Please re-enter IPv4! It is outside of the valid range 0-255\n");
-                exit = 1;
                 break;
             } else if ( i == 3 && test->octet[i] < 256 && test->octet[i] > 0 ) {
                 
@@ -348,41 +347,7 @@ void addAddress() {
             } 
         }
 
-        //check for alias longer than 10 characters reprompt
-        //&& isalpha(test->alias[11])
-
     }
-
-    //     printf("Enter IPv4 Address: ");
-    //     fgets(ip, 17, stdin);  
-    //     ip[strcspn(ip, "\n")] = 0;
-    //     sscanf(ip, "%d.%d.%d.%d\n", &test->octet[0], &test->octet[1], &test->octet[2], &test->octet[3]);
-    //     //check for octet out of range 0-255
-    //     for (int i = 0; i < 4; i++) {
-    //         if ( test->octet[i] > 255 || test->octet[i] < 0 ) {
-    //             printf("Please re-enter IPv4! It is outside of the valid range 0-255\n");
-    //             break;
-    //         } else if ( i == 3 && test->octet[i] < 256 && test->octet[i] > 0 ){
-    //             exit = 1;
-    //             break;
-    //         } 
-    //     }
-    // }
-    
-    // exit = 0;
-    // while (exit != 1) {
-    //     //Get input - Alias
-    //     printf("Enter a maximum 10 digit alias for IPv4 Address %s : ", ip);
-    //     fgets(alias, 50, stdin);  
-    //     sscanf(alias, "%s\n", test->alias);
-
-    //     if ( strlen(alias) > 10) {
-    //         printf("Please re-enter the alias! It's more than 10 digits!\n");
-    //         // break;
-    //     } else {
-    //         exit = 1;
-    //     }
-    // }
 
     //Search for duplicates
     while (ptr != NULL) {
