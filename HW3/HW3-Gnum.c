@@ -23,7 +23,8 @@ struct address_t
 {
     int octet[4];
     char alias[11];
-    struct address_t *next;
+    struct address_t *leftChild, *rightChild, *parent;
+    int height, depth;
 };
 struct address_t *head = NULL;
 
