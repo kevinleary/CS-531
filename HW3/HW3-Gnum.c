@@ -28,33 +28,32 @@ struct address_t
 };
 struct address_t *head = NULL;
 
-void createListFromFile();
-void displayList();
-void addAddress();
-struct address_t* lookUpAddress();
-void updateAddress();
-void deleteAddress();
-void displayAliasforLocation();
-void saveToFile();
-void menu();
-//Functions here
-/*
+//Function Headers: 
+void createListFromFile();              // -- not working - unchanged
+void displayList(struct address_t* node);                     // -- not working
+// void addAddress();                      // -- not working - unchanged
+// struct address_t *lookUpAddress();      // -- not working - unchanged
+// void updateAddress();                   // -- not working - unchanged
+// void deleteAddress();                   // -- not working - unchanged
+// void displayAliasforLocation();         // -- not working - unchanged
+// void saveToFile();                      // -- not working - unchanged
+// void menu();                            
+//BST Functions
+struct address_t *createNode(int octet0, int octet1, int octet2, int octet3, char alias[11]);
+struct address_t* insert(struct address_t* node, int octet0, int octet1, int octet2, int octet3, char alias[11]);
 
-
-Per the rurbric:
-1) Add address - almost done
-2) Look up address - almost done
-3) Update address - almost done
-4) Delete address - almost done
-5) Display list - almost done 
-6) Display aliases for location - almost done 
-7) Save to file - almost done
-8) Quit - starting
-
-Also need a populate list function - done
-*/
 
 int main() {
+
+    // menu();
+    
+    createListFromFile();
+    displayList(head);
+    return 0;
+}
+
+/***
+void menu() {
 
     int exit, choice = 0;
     printf("\nWelcome to the IPv4 Program!\nWe will start by reading in the CS531_Inet.txt file!\n");
@@ -98,14 +97,45 @@ int main() {
                 break;
         }
     }
+}
+****/
 
-    return 0;
+/****
+ * 
+ * 
+ *  BST Functions
+ * 
+ * ***/
+
+struct address_t *createNode(int octet0, int octet1, int octet2, int octet3, char alias[11]) {
+    struct address_t *temp= (struct address_t*)malloc(sizeof(struct address_t));
+    temp->octet[0] = octet0;
+    temp->octet[1] = octet1;
+    temp->octet[2] = octet2;
+    temp->octet[3] = octet3;
+    strcpy(temp->alias, alias);
+    temp->leftChild = temp->rightChild = temp->parent = NULL;
+    return temp;
+}
+struct address_t* insert(struct address_t* node, int octet0, int octet1, int octet2, int octet3, char alias[11]) {
+    
+    /* If the tree is empty, return a new node */
+    if (node == NULL) return createNode(octet0, octet1, octet2, octet3, alias);
+    
+    /* Otherwise, recur down the tree */
+    if ( strcmp(alias, node->alias) < 0 ) {
+        node->leftChild = insert(node->leftChild, octet0, octet1, octet2, octet3, alias);
+        node->leftChild->parent = node;
+    }
+    else {
+        node->rightChild = insert(node->rightChild, octet0, octet1, octet2, octet3, alias);
+        node->rightChild->parent = node;
+    }
+    /* return the (unchanged) node pointer */
+    return node;
 }
 
-void menu() {
-
-}
-
+/***
 void saveToFile() {
 
     char filename[50];
@@ -277,7 +307,7 @@ void updateAddress() {
 
 }
 
-struct address_t* lookUpAddress() {
+struct address_t *lookUpAddress() {
 
     //this might need to return an int for usage in update and delete address functions
     char alias[50];
@@ -376,8 +406,15 @@ void addAddress() {
     head = test;
         
 }
-
+****/
+//Order is based on alias!!!
 void createListFromFile() {
+
+    //init node
+    struct address_t *init= (struct address_t*)malloc(sizeof(struct address_t));
+    //Create new vars
+    int initOctet[4];
+    char initAlias[11];
 
     // Open the file
     FILE *address_file = fopen("CS531_Inet.txt", "r+");
@@ -391,25 +428,36 @@ void createListFromFile() {
     char line[100];
 
     while (fgets(line, sizeof(line), address_file)) {
-        struct address_t *test= (struct address_t*)malloc(sizeof(struct address_t));
+        // //Populate empty node
+        // if (temp == NULL) {
+        //     head = temp
+        // } 
 
-        sscanf(line, "%d.%d.%d.%d %s\n", &test->octet[0], &test->octet[1], &test->octet[2], &test->octet[3], test->alias);
-        test->next = head;
-        head = test;
+        //Get line input
+        sscanf(line, "%d.%d.%d.%d %s\n", &initOctet[0], &initOctet[1], &initOctet[2], &initOctet[3], initAlias);
+        init = insert(init, initOctet[0], initOctet[1], initOctet[2], initOctet[3], initAlias);
     }
+    head = init;
 
 }
 
-void displayList() {
-    struct address_t *ptr = head;
+void displayList(struct address_t *root) {
+    
+    //Inorder traversal
 
-    while (ptr != NULL) {
-        printf("%d.%d.%d.%d %s\n", ptr->octet[0], ptr->octet[1], ptr->octet[2], ptr->octet[3], ptr->alias);
-        ptr = ptr->next;
+    if (root != NULL) {
+        displayList(root->leftChild);
+        if ( root->parent == NULL )
+            printf("%d.%d.%d.%d %s parent: NONE\n", root->octet[0], root->octet[1], root->octet[2], root->octet[3], root->alias);
+        else
+            printf("%d.%d.%d.%d %s parent:%s\n", root->octet[0], root->octet[1], root->octet[2], root->octet[3], root->alias, root->parent->alias);
+        // if (root->parent == NULL)
+        //     printf("Parent: NULL\n");
+        // else
+        //     printf("Parent: %s\n", root->parent->alias);
+        displayList(root->rightChild);
     }
 
-    if (head == NULL) {
-        printf("Address list is NULL!\n");
-    }
+    // 0.0.0.0 buffer bullshit parent value ???
 
 }
