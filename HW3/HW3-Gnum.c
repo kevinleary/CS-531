@@ -410,8 +410,8 @@ void addAddress() {
 //Order is based on alias!!!
 void createListFromFile() {
 
-    //init node
-    struct address_t *init= (struct address_t*)malloc(sizeof(struct address_t));
+    //init node - needs to be NULL or garbage value populated
+    struct address_t *init= NULL;
     //Create new vars
     int initOctet[4];
     char initAlias[11];
