@@ -29,20 +29,22 @@ struct address_t
 struct address_t *head = NULL;
 
 //Function Headers: 
-void createListFromFile();              // -- not working - unchanged
-void displayList(struct address_t* node);                     // -- not working
-// void addAddress();                      // -- not working - unchanged
+void createListFromFile();              // -- working
+void displayList(struct address_t* node);                     // --  working
+void addAddress();                      // -- not working 
 // struct address_t *lookUpAddress();      // -- not working - unchanged
 // void updateAddress();                   // -- not working - unchanged
 // void deleteAddress();                   // -- not working - unchanged
 // void displayAliasforLocation();         // -- not working - unchanged
 // void saveToFile();                      // -- not working - unchanged
-// void menu();                            
+// void menu();      
+
 //BST Functions
 struct address_t *createNode(int octet0, int octet1, int octet2, int octet3, char alias[11]);
 struct address_t* insert(struct address_t* node, int octet0, int octet1, int octet2, int octet3, char alias[11]);
 int findDepth(struct address_t* node);
 int findHeight(struct address_t* node);
+struct address_t* searchForNode(struct address_t* node, char alias[11]);
 
 
 int main() {
@@ -110,6 +112,10 @@ void menu() {
  * 
  * ***/
 
+struct address_t* searchForNode(struct address_t* node, char alias[11]) {
+    
+}
+
 int findHeight(struct address_t* node) {
 
     //Height algorithm is n-1 so need to start at -1 
@@ -157,7 +163,7 @@ struct address_t* insert(struct address_t* node, int octet0, int octet1, int oct
         node->rightChild = insert(node->rightChild, octet0, octet1, octet2, octet3, alias);
         node->rightChild->parent = node;
     }
-    // node->depth = findDepth(node, 0);
+    
     /* return the (unchanged) node pointer */
     return node;
 }
@@ -365,6 +371,7 @@ struct address_t *lookUpAddress() {
     printf("\nError! Alias does not exist in list!\n");
     return NULL;
 }
+***/
 
 //When addAddress is first selection it makes the menu reprompt and auto populates a garbage address - mind boggling (maybe only on the mac?)
 void addAddress() {
@@ -433,7 +440,7 @@ void addAddress() {
     head = test;
         
 }
-****/
+
 //Order is based on alias!!!
 void createListFromFile() {
 
@@ -464,6 +471,7 @@ void createListFromFile() {
         sscanf(line, "%d.%d.%d.%d %s\n", &initOctet[0], &initOctet[1], &initOctet[2], &initOctet[3], initAlias);
         init = insert(init, initOctet[0], initOctet[1], initOctet[2], initOctet[3], initAlias);
     }
+    //Set head to the init BST because this function will always be ran first
     head = init;
 
 }
