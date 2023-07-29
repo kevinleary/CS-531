@@ -41,6 +41,8 @@ void displayList(struct address_t* node);                     // -- not working
 //BST Functions
 struct address_t *createNode(int octet0, int octet1, int octet2, int octet3, char alias[11]);
 struct address_t* insert(struct address_t* node, int octet0, int octet1, int octet2, int octet3, char alias[11]);
+int findDepth(struct address_t* node);
+int findHeight(struct address_t* node);
 
 
 int main() {
@@ -48,6 +50,7 @@ int main() {
     // menu();
     
     createListFromFile();
+
     displayList(head);
     return 0;
 }
@@ -107,6 +110,29 @@ void menu() {
  * 
  * ***/
 
+int findHeight(struct address_t* node) {
+
+    //Height algorithm is n-1 so need to start at -1 
+    if (node == NULL){
+        return -1;
+    } else {
+        // simple max function to determine which height to add based on children
+        if ( findHeight(node->leftChild) > findHeight(node->rightChild) )
+            return findHeight(node->leftChild) + 1;
+        else
+            return findHeight(node->rightChild) + 1;
+    }
+
+}
+
+int findDepth(struct address_t* node) {
+    //If node has no parents its depth is 0
+    if (node->parent == NULL) 
+        return 0;
+    //Go up the tree adding 1 for each parent until no parents
+    return findDepth(node->parent) + 1;
+}
+
 struct address_t *createNode(int octet0, int octet1, int octet2, int octet3, char alias[11]) {
     struct address_t *temp= (struct address_t*)malloc(sizeof(struct address_t));
     temp->octet[0] = octet0;
@@ -131,6 +157,7 @@ struct address_t* insert(struct address_t* node, int octet0, int octet1, int oct
         node->rightChild = insert(node->rightChild, octet0, octet1, octet2, octet3, alias);
         node->rightChild->parent = node;
     }
+    // node->depth = findDepth(node, 0);
     /* return the (unchanged) node pointer */
     return node;
 }
@@ -446,18 +473,21 @@ void displayList(struct address_t *root) {
     //Inorder traversal
 
     if (root != NULL) {
+        root->depth = findDepth(root);
+        root->height = findHeight(root);
         displayList(root->leftChild);
-        if ( root->parent == NULL )
-            printf("%d.%d.%d.%d %s parent: NONE\n", root->octet[0], root->octet[1], root->octet[2], root->octet[3], root->alias);
-        else
-            printf("%d.%d.%d.%d %s parent:%s\n", root->octet[0], root->octet[1], root->octet[2], root->octet[3], root->alias, root->parent->alias);
+        if ( root->parent == NULL ) {
+            // root->depth = findDepth(head, root->alias);
+            printf("%d.%d.%d.%d %s height:%d depth:%d parent:NONE\n", root->octet[0], root->octet[1], root->octet[2], root->octet[3], root->alias, root->height, root->depth);
+        } else {
+            // root->depth = findDepth(head, root->alias);
+            printf("%d.%d.%d.%d %s height:%d depth:%d parent:%s\n", root->octet[0], root->octet[1], root->octet[2], root->octet[3], root->alias, root->height, root->depth, root->parent->alias);
+        }
         // if (root->parent == NULL)
         //     printf("Parent: NULL\n");
         // else
         //     printf("Parent: %s\n", root->parent->alias);
         displayList(root->rightChild);
     }
-
-    // 0.0.0.0 buffer bullshit parent value ???
 
 }
