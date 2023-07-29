@@ -52,8 +52,17 @@ int main() {
     // menu();
     
     createListFromFile();
-
     displayList(head);
+    printf("\n\n");
+    struct address_t* test = searchForNode(head, "platte");
+    displayList(test);
+    printf("\n\n");
+    //test depth and hegit -- working
+    head = insert(head, 123, 213, 123, 12, "test");
+    head = insert(head, 123, 213, 123, 12, "another");
+    head = insert(head, 123, 213, 123, 12, "here");
+    displayList(head);
+
     return 0;
 }
 
@@ -113,7 +122,34 @@ void menu() {
  * ***/
 
 struct address_t* searchForNode(struct address_t* node, char alias[11]) {
-    
+    // base case
+    if (node == NULL) 
+        return node;
+    // If the key to be deleted is smaller than the root's key,
+    // then it lies in left subtree
+    if ( strcmp(alias, node->alias) < 0 ) {
+        
+        return searchForNode(node->leftChild, alias);
+    }
+
+    // If the key to be deleted is greater than the root's key,
+    // then it lies in right subtree
+    else if (strcmp(alias, node->alias) > 0) {
+        // free(node);
+        return searchForNode(node->rightChild, alias);
+    }
+
+    else if (strcmp(alias, node->alias) == 0 ) {
+        struct address_t* found = createNode(node->octet[0], node->octet[1], node->octet[2], node->octet[3], node->alias);
+        found->parent = node->parent;
+        found->depth = node->depth;
+        found->height = node->height;
+        return found;
+    }
+
+    else 
+        return node;
+
 }
 
 int findHeight(struct address_t* node) {
@@ -147,24 +183,29 @@ struct address_t *createNode(int octet0, int octet1, int octet2, int octet3, cha
     temp->octet[3] = octet3;
     strcpy(temp->alias, alias);
     temp->leftChild = temp->rightChild = temp->parent = NULL;
+    temp->depth = temp->height = -1;
     return temp;
 }
 struct address_t* insert(struct address_t* node, int octet0, int octet1, int octet2, int octet3, char alias[11]) {
     
-    /* If the tree is empty, return a new node */
+    //If the tree is empty return a new node
     if (node == NULL) return createNode(octet0, octet1, octet2, octet3, alias);
     
-    /* Otherwise, recur down the tree */
+    //Otherwise, recur down the tree
     if ( strcmp(alias, node->alias) < 0 ) {
+        //insertion changes order so need to reset depth and height
+        node->depth = node->height = -1;
         node->leftChild = insert(node->leftChild, octet0, octet1, octet2, octet3, alias);
         node->leftChild->parent = node;
     }
     else {
+        //insertion changes order so need to reset depth and height
+        node->depth = node->height = -1;
         node->rightChild = insert(node->rightChild, octet0, octet1, octet2, octet3, alias);
         node->rightChild->parent = node;
     }
     
-    /* return the (unchanged) node pointer */
+    // return node pointer
     return node;
 }
 
@@ -373,6 +414,7 @@ struct address_t *lookUpAddress() {
 }
 ***/
 
+/***
 //When addAddress is first selection it makes the menu reprompt and auto populates a garbage address - mind boggling (maybe only on the mac?)
 void addAddress() {
         
@@ -440,6 +482,7 @@ void addAddress() {
     head = test;
         
 }
+***/
 
 //Order is based on alias!!!
 void createListFromFile() {
@@ -481,8 +524,11 @@ void displayList(struct address_t *root) {
     //Inorder traversal
 
     if (root != NULL) {
-        root->depth = findDepth(root);
-        root->height = findHeight(root);
+        //check if height and depth not already calculated or have been shifted
+        if ( (root->depth == -1) || (root->height == -1) ) {
+            root->depth = findDepth(root);
+            root->height = findHeight(root);
+        }
         displayList(root->leftChild);
         if ( root->parent == NULL ) {
             // root->depth = findDepth(head, root->alias);
