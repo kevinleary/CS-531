@@ -65,11 +65,12 @@ int main() {
     // copyNode(head2, head);
     // displayList(head2);
     // doesn't work with head node for some reason???
-    head2 = deleteNode(head, "platte");
-    displayList(head2);
+    displayList(head);
+    head = insert(head, 123, 213, 123, 12, "test");
     printf("\n\n");
+    head2 = deleteNode(head, "test");
+    displayList(head2);
     //test depth and hegit -- working
-    // head = insert(head, 123, 213, 123, 12, "test");
     // head = insert(head, 123, 213, 123, 12, "another");
     // head = insert(head, 123, 213, 123, 12, "here");
 
@@ -133,7 +134,7 @@ void menu() {
  * 
  * ***/
 
-//top most nide won't delete
+//top most node won't delete -- FIXED
 struct address_t* deleteNode(struct address_t* node, char alias[11]) {
 
     // base case
@@ -168,10 +169,11 @@ struct address_t* deleteNode(struct address_t* node, char alias[11]) {
         }
 
         struct address_t* temp = minValueNode(node->rightChild);
-        copyNode(node, temp);
-        // displayList(node);
-        // printf("\n\n");
-        // displayList(temp);
+        node->octet[0] = temp->octet[0];
+        node->octet[1] = temp->octet[1];
+        node->octet[2] = temp->octet[2];
+        node->octet[3] = temp->octet[3];
+        strcpy(node->alias, temp->alias);
         node->rightChild = deleteNode(node->rightChild, temp->alias);
     }
     return node;
