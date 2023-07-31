@@ -45,6 +45,10 @@ struct address_t* insert(struct address_t* node, int octet0, int octet1, int oct
 int findDepth(struct address_t* node);
 int findHeight(struct address_t* node);
 struct address_t* searchForNode(struct address_t* node, char alias[11]);
+struct address_t* minValueNode(struct address_t* node);
+void copyNode(struct address_t* dest, struct address_t* src);
+struct address_t* deleteNode(struct address_t* node, char alias[11]);
+
 
 
 int main() {
@@ -52,16 +56,24 @@ int main() {
     // menu();
     
     createListFromFile();
-    displayList(head);
-    printf("\n\n");
-    struct address_t* test = searchForNode(head, "platte");
-    displayList(test);
+    // displayList(head);
+    // printf("\n\n");
+    // struct address_t* test = searchForNode(head, "platte");
+    // displayList(test);
+    // printf("\n\n");
+    struct address_t *head2= (struct address_t*)malloc(sizeof(struct address_t));
+    // copyNode(head2, head);
+    // displayList(head2);
+    // doesn't work with head node for some reason???
+    head2 = deleteNode(head, "platte");
+    displayList(head2);
     printf("\n\n");
     //test depth and hegit -- working
-    head = insert(head, 123, 213, 123, 12, "test");
-    head = insert(head, 123, 213, 123, 12, "another");
-    head = insert(head, 123, 213, 123, 12, "here");
-    displayList(head);
+    // head = insert(head, 123, 213, 123, 12, "test");
+    // head = insert(head, 123, 213, 123, 12, "another");
+    // head = insert(head, 123, 213, 123, 12, "here");
+
+    // displayList(head);
 
     return 0;
 }
@@ -120,6 +132,76 @@ void menu() {
  *  BST Functions
  * 
  * ***/
+
+//top most nide won't delete
+struct address_t* deleteNode(struct address_t* node, char alias[11]) {
+
+    // base case
+    if (node == NULL) 
+        return node;
+    // If the key to be deleted is smaller than the root's key,
+    // then it lies in left subtree
+    
+    if ( strcmp(alias, node->alias) < 0 ) {
+        
+        node->leftChild = deleteNode(node->leftChild, alias);
+    }
+
+    // If the key to be deleted is greater than the root's key,
+    // then it lies in right subtree
+    else if (strcmp(alias, node->alias) > 0) {
+        // free(node);
+        node->rightChild = deleteNode(node->rightChild, alias);
+    }
+
+    //actually do some deleting
+    else {
+        if (node->leftChild == NULL) {
+            struct address_t* temp = node->rightChild;
+            free(node);
+            return temp;
+        }
+        else if (node->rightChild == NULL) {
+            struct address_t* temp = node->leftChild;
+            free(node);
+            return temp;
+        }
+
+        struct address_t* temp = minValueNode(node->rightChild);
+        copyNode(node, temp);
+        // displayList(node);
+        // printf("\n\n");
+        // displayList(temp);
+        node->rightChild = deleteNode(node->rightChild, temp->alias);
+    }
+    return node;
+}
+
+//Copy to the destination from the source
+void copyNode(struct address_t* dest, struct address_t* src) {
+
+    dest->octet[0] = src->octet[0];
+    dest->octet[1] = src->octet[1];
+    dest->octet[2] = src->octet[2];
+    dest->octet[3] = src->octet[3];
+    strcpy(dest->alias, src->alias);
+    dest->leftChild = src->leftChild;
+    dest->rightChild = src->rightChild;
+    dest->parent = src->parent;
+    dest->depth = src->depth;
+    dest->height = src->height;
+}
+
+/* Given a non-empty binary search tree, return the node with the minimum
+key value found in that tree. */
+struct address_t * minValueNode(struct address_t* node) {
+    struct address_t* current = node;
+    /* loop down to find the leftmost leaf */
+    while (current && current->leftChild != NULL)
+        current = current->leftChild;
+    
+    return current;
+}
 
 struct address_t* searchForNode(struct address_t* node, char alias[11]) {
     // base case
