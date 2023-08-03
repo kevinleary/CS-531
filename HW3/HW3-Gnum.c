@@ -28,11 +28,11 @@ struct address_t
 };
 struct address_t *head = NULL;
 //ONE GLOBAL VAR
-int count = 0;
+int global_count = 0;
 
 //Function Headers: 
 void createListFromFile();              // -- working
-void displayList(struct address_t* node);                     // --  working
+void displayList(struct address_t* node); // --  working
 void addAddress();                      // -- not working 
 // struct address_t *lookUpAddress();      // -- not working - unchanged
 // void updateAddress();                   // -- not working - unchanged
@@ -46,6 +46,7 @@ struct address_t *createNode(int octet0, int octet1, int octet2, int octet3, cha
 struct address_t* insert(struct address_t* node, int octet0, int octet1, int octet2, int octet3, char alias[11]);
 int findDepth(struct address_t* node);
 int findHeight(struct address_t* node);
+void searchForDups(struct address_t* root, int octet[4], char alias[11]);
 struct address_t* searchForAlias(struct address_t* node, char alias[11]);
 void searchForLocality(struct address_t* root, int loc0, int loc1);
 struct address_t* minValueNode(struct address_t* node);
@@ -69,12 +70,14 @@ int main() {
     // displayList(head2);
     // doesn't work with head node for some reason???
     displayList(head);
-    head = insert(head, 123, 213, 123, 12, "test");
+    // head = insert(head, 123, 213, 123, 12, "test");
     printf("\n\n");
     // head2 = deleteNode(head, "test");
     // displayList(head2);
     // saveToFile();
-    displayAliasforLocation();
+    // displayAliasforLocation();
+    addAddress();
+    displayList(head);
     //test depth and hegit -- working
     // head = insert(head, 123, 213, 123, 12, "another");
     // head = insert(head, 123, 213, 123, 12, "here");
@@ -139,7 +142,6 @@ void menu() {
  * 
  * ***/
 
-//top most node won't delete -- FIXED
 struct address_t* deleteNode(struct address_t* node, char alias[11]) {
 
     // base case
@@ -340,7 +342,7 @@ void searchForLocality(struct address_t* root, int loc0, int loc1) {
         if ( (root->octet[0] == loc0) && (root->octet[1] == loc1)) {
             // root->depth = findDepth(head, root->alias);
             printf("%s\n", root->alias);
-            count = 1;
+            global_count = 1;
         }
         // else if (root->parent == NULL && )
         // if (root->parent == NULL)
@@ -377,9 +379,12 @@ void displayAliasforLocation() {
     printf("Locality is %d.%d\n", loc0, loc1);
     searchForLocality(head, loc0, loc1);
 
-    if ( count == 0) {
+    if ( global_count == 0) {
         printf("Error: Locality %d.%d does not exist in the list!\n", loc0, loc1);
     }
+
+    //reset global var
+    global_count = 0;
 
 }
 
@@ -522,16 +527,43 @@ struct address_t *lookUpAddress() {
 }
 ***/
 
-/***
+void searchForDups(struct address_t* root, int octet[4], char alias[11]) {
+    
+    if (root != NULL) {    
+        searchForDups(root->leftChild, octet, alias);
+        
+        int count = 0;
+        for (int i = 0; i < 4; i++) {
+            if (head->octet[i] == octet[i]) {
+                count++;
+            }
+        }
+        if (count == 4) {
+            if (global_count != 1)
+                printf("\nError: IPv4 already exists in list!\n");
+            global_count = 1;
+            return;
+        }
+        
+        //now check for alias
+        if ( strcmp(root->alias, alias) == 0) {
+            printf("\nError: Alias already exists in list!\n");
+            global_count = 1;
+            return;
+        }
+
+        searchForDups(root->rightChild, octet, alias);
+    } 
+}
+
 //When addAddress is first selection it makes the menu reprompt and auto populates a garbage address - mind boggling (maybe only on the mac?)
 void addAddress() {
         
     char ip[17];
     char alias[50];
     char ipAlias[50];
+    int octet[4];
     int exit, reprompt, iter = 0;
-    struct address_t *test= (struct address_t*)malloc(sizeof(struct address_t));
-    struct address_t *ptr = head;
     
     //working...
     while (exit != 1) {
@@ -539,15 +571,15 @@ void addAddress() {
         printf("Enter IPv4 Address followed by a 10 character Alias: ");
         fgets(ipAlias, 50, stdin);  
         // ipAlias[strcspn(ipAlias, "\n")] = 0;
-        sscanf(ipAlias, "%d.%d.%d.%d %s", &test->octet[0], &test->octet[1], &test->octet[2], &test->octet[3], test->alias);
+        sscanf(ipAlias, "%d.%d.%d.%d %s", &octet[0], &octet[1], &octet[2], &octet[3], alias);
         //check for octet out of range 0-255
         for (int i = 0; i < 4; i++) {
-            if ( test->octet[i] > 255 || test->octet[i] < 0 ) {
+            if ( octet[i] > 255 || octet[i] < 0 ) {
                 printf("Please re-enter IPv4! It is outside of the valid range 0-255\n");
                 break;
-            } else if ( i == 3 && test->octet[i] < 256 && test->octet[i] > 0 ) {
+            } else if ( i == 3 && octet[i] < 256 && octet[i] > 0 ) {
                 
-                if ( strlen(test->alias) > 10 ) {
+                if ( strlen(alias) > 10 ) {
                     printf("Please re-enter the alias! It's more than 10 digits!\n");
                     break;
                 } else {
@@ -560,37 +592,16 @@ void addAddress() {
     }
 
     //Search for duplicates
-    while (ptr != NULL) {
-        //check octets
-        int count = 0;
-        for (int i = 0; i < 4; i++) {
-            if (ptr->octet[i] == test->octet[i]) {
-                count++;
-            }
-        }
-        if (count == 4) {
-            printf("\nError: IPv4 already exists in list!\n");
-            return;
-            break;
-        }
-        //now check for alias
-        if ( strcmp(ptr->alias, test->alias) == 0) {
-            printf("\nError: Alias already exists in list!\n");
-            return;
-            break;
-        }
-
-        ptr = ptr->next;
+    searchForDups(head, octet, alias);
+    if ( global_count == 0) {
+        // printf("\nError: IPv4 or Alias already exists in list!\n");
+        insert(head, octet[0], octet[1], octet[2], octet[3], alias);
 
     }
-
-
-    //Point to next memory location
-    test->next = head;
-    head = test;
+    //reset global var
+    global_count = 0;
         
 }
-***/
 
 //Order is based on alias!!!
 void createListFromFile() {
