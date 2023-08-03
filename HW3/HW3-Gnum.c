@@ -27,6 +27,8 @@ struct address_t
     int height, depth;
 };
 struct address_t *head = NULL;
+//ONE GLOBAL VAR
+int count = 0;
 
 //Function Headers: 
 void createListFromFile();              // -- working
@@ -332,19 +334,22 @@ void saveToFile() {
 
 
 void searchForLocality(struct address_t* root, int loc0, int loc1) {
-
+    
     if (root != NULL) {    
         searchForLocality(root->leftChild, loc0, loc1);
         if ( (root->octet[0] == loc0) && (root->octet[1] == loc1)) {
             // root->depth = findDepth(head, root->alias);
             printf("%s\n", root->alias);
-        } 
+            count = 1;
+        }
+        // else if (root->parent == NULL && )
         // if (root->parent == NULL)
         //     printf("Parent: NULL\n");
         // else
         //     printf("Parent: %s\n", root->parent->alias);
         searchForLocality(root->rightChild, loc0, loc1);
     } 
+    // return 0;
 
     //     printf("Error: Locality %d.%d does not exist in the list!\n", loc1, loc2);
     // printf("\nAliases with range %d.%d found are: \n", loc1, loc2);
@@ -371,28 +376,10 @@ void displayAliasforLocation() {
         
     printf("Locality is %d.%d\n", loc0, loc1);
     searchForLocality(head, loc0, loc1);
-    //search for locality range - working
-    // int i = 0;
-    // while (ptr != NULL) {
 
-    //     if (tmp->octet[0] == ptr->octet[0] && tmp->octet[1] == ptr->octet[1]) {
-    //         strcpy(list[i], ptr->alias);
-    //         i++;
-    //         ptr = ptr->next;
-    //     }
-    //     else {
-    //         ptr = ptr->next;
-    //     }
-    // }
-    //print list here... if there is a list
-    // if ( strlen(list[0]) == 1 ) {
-    //     printf("Error: Locality %d.%d does not exist in the list!\n", tmp->octet[0], tmp->octet[1]);
-    // } else {
-    //     printf("\nAliases with range %d.%d found are: \n", tmp->octet[0], tmp->octet[1]);
-    //     for (int j = 0; j < strlen(list[j]); j++) {
-    //         printf("%s\n", list[j]);
-    //     }
-    // }
+    if ( count == 0) {
+        printf("Error: Locality %d.%d does not exist in the list!\n", loc0, loc1);
+    }
 
 }
 
