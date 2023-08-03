@@ -35,8 +35,8 @@ void addAddress();                      // -- not working
 // struct address_t *lookUpAddress();      // -- not working - unchanged
 // void updateAddress();                   // -- not working - unchanged
 // void deleteAddress();                   // -- not working - unchanged
-// void displayAliasforLocation();         // -- not working - unchanged
-void saveToFile();                      // -- not working - unchanged
+void displayAliasforLocation();         // -- working
+void saveToFile();                      // -- working
 // void menu();      
 
 //BST Functions
@@ -44,7 +44,8 @@ struct address_t *createNode(int octet0, int octet1, int octet2, int octet3, cha
 struct address_t* insert(struct address_t* node, int octet0, int octet1, int octet2, int octet3, char alias[11]);
 int findDepth(struct address_t* node);
 int findHeight(struct address_t* node);
-struct address_t* searchForNode(struct address_t* node, char alias[11]);
+struct address_t* searchForAlias(struct address_t* node, char alias[11]);
+void searchForLocality(struct address_t* root, int loc0, int loc1);
 struct address_t* minValueNode(struct address_t* node);
 void copyNode(struct address_t* dest, struct address_t* src);
 struct address_t* deleteNode(struct address_t* node, char alias[11]);
@@ -70,7 +71,8 @@ int main() {
     printf("\n\n");
     // head2 = deleteNode(head, "test");
     // displayList(head2);
-    saveToFile();
+    // saveToFile();
+    displayAliasforLocation();
     //test depth and hegit -- working
     // head = insert(head, 123, 213, 123, 12, "another");
     // head = insert(head, 123, 213, 123, 12, "here");
@@ -206,7 +208,7 @@ struct address_t * minValueNode(struct address_t* node) {
     return current;
 }
 
-struct address_t* searchForNode(struct address_t* node, char alias[11]) {
+struct address_t* searchForAlias(struct address_t* node, char alias[11]) {
     // base case
     if (node == NULL) 
         return node;
@@ -214,14 +216,14 @@ struct address_t* searchForNode(struct address_t* node, char alias[11]) {
     // then it lies in left subtree
     if ( strcmp(alias, node->alias) < 0 ) {
         
-        return searchForNode(node->leftChild, alias);
+        return searchForAlias(node->leftChild, alias);
     }
 
     // If the key to be deleted is greater than the root's key,
     // then it lies in right subtree
     else if (strcmp(alias, node->alias) > 0) {
         // free(node);
-        return searchForNode(node->rightChild, alias);
+        return searchForAlias(node->rightChild, alias);
     }
 
     else if (strcmp(alias, node->alias) == 0 ) {
@@ -327,48 +329,70 @@ void saveToFile() {
     printf("File %s ready!\n", filename);
     fclose(address_file);
 }
-/***
+
+
+void searchForLocality(struct address_t* root, int loc0, int loc1) {
+
+    if (root != NULL) {    
+        searchForLocality(root->leftChild, loc0, loc1);
+        if ( (root->octet[0] == loc0) && (root->octet[1] == loc1)) {
+            // root->depth = findDepth(head, root->alias);
+            printf("%s\n", root->alias);
+        } 
+        // if (root->parent == NULL)
+        //     printf("Parent: NULL\n");
+        // else
+        //     printf("Parent: %s\n", root->parent->alias);
+        searchForLocality(root->rightChild, loc0, loc1);
+    } 
+
+    //     printf("Error: Locality %d.%d does not exist in the list!\n", loc1, loc2);
+    // printf("\nAliases with range %d.%d found are: \n", loc1, loc2);
+}
+
+
 void displayAliasforLocation() {
 
     //This needs to be ordered pair - first two values for locality... 172.16...
     //List ALL alias that map to 172.16 ... 
 
     char locality[8];
-    char list[100][11];
-    struct address_t *ptr = head;
-    struct address_t *tmp = (struct address_t*)malloc(sizeof(struct address_t));
+    // char list[100][11];
+    // struct address_t *ptr = head;
+    // struct address_t *tmp = (struct address_t*)malloc(sizeof(struct address_t));
+    int loc0, loc1 = 0;
 
     //Prompt for locality
     printf("Please enter a locality (XXX.XXX) to see if it exists in the list: ");
     fgets(locality, 8, stdin);  
     //TODO:REPROMPT IF ERROR
     locality[strcspn(locality, "\n")] = 0;
-    sscanf(locality, "%d.%d\n", &tmp->octet[0], &tmp->octet[1]);
+    sscanf(locality, "%d.%d\n", &loc0, &loc1);
         
-    printf("Locality is %d.%d\n", tmp->octet[0], tmp->octet[1]);
-
+    printf("Locality is %d.%d\n", loc0, loc1);
+    searchForLocality(head, loc0, loc1);
     //search for locality range - working
-    int i = 0;
-    while (ptr != NULL) {
+    // int i = 0;
+    // while (ptr != NULL) {
 
-        if (tmp->octet[0] == ptr->octet[0] && tmp->octet[1] == ptr->octet[1]) {
-            strcpy(list[i], ptr->alias);
-            i++;
-            ptr = ptr->next;
-        }
-        else {
-            ptr = ptr->next;
-        }
-    }
+    //     if (tmp->octet[0] == ptr->octet[0] && tmp->octet[1] == ptr->octet[1]) {
+    //         strcpy(list[i], ptr->alias);
+    //         i++;
+    //         ptr = ptr->next;
+    //     }
+    //     else {
+    //         ptr = ptr->next;
+    //     }
+    // }
     //print list here... if there is a list
-    if ( strlen(list[0]) == 1 ) {
-        printf("Error: Locality %d.%d does not exist in the list!\n", tmp->octet[0], tmp->octet[1]);
-    } else {
-        printf("\nAliases with range %d.%d found are: \n", tmp->octet[0], tmp->octet[1]);
-        for (int j = 0; j < strlen(list[j]); j++) {
-            printf("%s\n", list[j]);
-        }
-    }
+    // if ( strlen(list[0]) == 1 ) {
+    //     printf("Error: Locality %d.%d does not exist in the list!\n", tmp->octet[0], tmp->octet[1]);
+    // } else {
+    //     printf("\nAliases with range %d.%d found are: \n", tmp->octet[0], tmp->octet[1]);
+    //     for (int j = 0; j < strlen(list[j]); j++) {
+    //         printf("%s\n", list[j]);
+    //     }
+    // }
 
 }
 
