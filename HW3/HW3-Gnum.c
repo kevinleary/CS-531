@@ -36,7 +36,7 @@ void addAddress();                      // -- not working
 // void updateAddress();                   // -- not working - unchanged
 // void deleteAddress();                   // -- not working - unchanged
 // void displayAliasforLocation();         // -- not working - unchanged
-// void saveToFile();                      // -- not working - unchanged
+void saveToFile();                      // -- not working - unchanged
 // void menu();      
 
 //BST Functions
@@ -68,8 +68,9 @@ int main() {
     displayList(head);
     head = insert(head, 123, 213, 123, 12, "test");
     printf("\n\n");
-    head2 = deleteNode(head, "test");
-    displayList(head2);
+    // head2 = deleteNode(head, "test");
+    // displayList(head2);
+    saveToFile();
     //test depth and hegit -- working
     // head = insert(head, 123, 213, 123, 12, "another");
     // head = insert(head, 123, 213, 123, 12, "here");
@@ -293,11 +294,25 @@ struct address_t* insert(struct address_t* node, int octet0, int octet1, int oct
     return node;
 }
 
-/***
+void saveToFileInorderTraversal(struct address_t* root, FILE *file) {
+        
+    if (root != NULL) {
+        saveToFileInorderTraversal(root->leftChild, file);
+        if ( root->parent == NULL ) {
+            // root->depth = findDepth(head, root->alias);
+            fprintf(file, "%d.%d.%d.%d %s\n", root->octet[0], root->octet[1], root->octet[2], root->octet[3], root->alias);
+        } else {
+            // root->depth = findDepth(head, root->alias);
+            fprintf(file, "%d.%d.%d.%d %s\n", root->octet[0], root->octet[1], root->octet[2], root->octet[3], root->alias);
+        }
+        saveToFileInorderTraversal(root->rightChild, file);
+    }
+}
+
 void saveToFile() {
 
     char filename[50];
-    struct address_t *ptr = head;
+    // struct address_t *ptr = head;
     //Prompt for file name
     printf("Please enter a name for the file: ");
     fgets(filename, 50, stdin);
@@ -307,14 +322,12 @@ void saveToFile() {
     FILE *address_file = fopen(filename, "w");
 
     //Put list into file
-    while (ptr != NULL) {
-        fprintf(address_file, "%d.%d.%d.%d %s\n", ptr->octet[0], ptr->octet[1], ptr->octet[2], ptr->octet[3], ptr->alias);
-        ptr = ptr->next;
-    }
+    saveToFileInorderTraversal(head, address_file);
+
     printf("File %s ready!\n", filename);
     fclose(address_file);
 }
-
+/***
 void displayAliasforLocation() {
 
     //This needs to be ordered pair - first two values for locality... 172.16...
@@ -359,7 +372,7 @@ void displayAliasforLocation() {
 
 }
 
-
+/***
 void deleteAddress() { 
 
     char confirm;
