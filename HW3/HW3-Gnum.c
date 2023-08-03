@@ -33,10 +33,10 @@ int global_count = 0;
 //Function Headers: 
 void createListFromFile();              // -- working
 void displayList(struct address_t* node); // --  working
-void addAddress();                      // -- not working 
-// struct address_t *lookUpAddress();      // -- not working - unchanged
-// void updateAddress();                   // -- not working - unchanged
-// void deleteAddress();                   // -- not working - unchanged
+void addAddress();                      // -- working 
+struct address_t *lookUpAddress();      // -- 
+void updateAddress();                   // -- 
+void deleteAddress();                   // -- 
 void displayAliasforLocation();         // -- working
 void saveToFile();                      // -- working
 // void menu();      
@@ -76,7 +76,11 @@ int main() {
     // displayList(head2);
     // saveToFile();
     // displayAliasforLocation();
-    addAddress();
+    // addAddress();
+    // displayList(head);
+    head2 = lookUpAddress();
+    displayList(head2);
+    deleteAddress();
     displayList(head);
     //test depth and hegit -- working
     // head = insert(head, 123, 213, 123, 12, "another");
@@ -277,6 +281,8 @@ struct address_t *createNode(int octet0, int octet1, int octet2, int octet3, cha
     temp->depth = temp->height = -1;
     return temp;
 }
+
+
 struct address_t* insert(struct address_t* node, int octet0, int octet1, int octet2, int octet3, char alias[11]) {
     
     //If the tree is empty return a new node
@@ -388,54 +394,36 @@ void displayAliasforLocation() {
 
 }
 
-/***
+
 void deleteAddress() { 
 
     char confirm;
     struct address_t *del = lookUpAddress();
-    struct address_t *prev = head;
+    // struct address_t *prev = head;
 
     if (del != NULL) {
+        
         printf("Please confirm that you want to delete alias %s with ip %d.%d.%d.%d...\nEnter 'Y' for Yes or 'N' for No: ", del->alias, del->octet[0], del->octet[1], del->octet[2], del->octet[3]);
         scanf("%c", &confirm);
-
-        //Eliminate the upper or lower case issues
+        
         if ( confirm == 'Y' || confirm == 'y' ) {
-            //find the previous node real quick
-            while (prev != NULL) {
-                if (prev->next == del) { 
-                    break;
-                }
-                prev = prev->next;
-            }
-
-            //If previous exists and del is any node besides the head node
-            if (prev != NULL) {
-                prev->next = del->next;
-            }
-            //If del is the head node
-            else if (del == head) {
-                head = del->next;
-            }
-            //Delete it!!
-            free(del);
-            del = NULL;
+            deleteNode(head, del->alias);
 
         } else if ( confirm == 'N' || confirm == 'n' ) {
-            displayList();
+            displayList(head);
             
         } else {        // - This is for error input
             printf("\nError: %c is not 'Y' or 'N' - try again...\n", confirm);
             //Empty Character constant
             confirm = '\0';
-            displayList();
+            displayList(head);
         }
 
     }
 
 }
 
-
+/***
 void updateAddress() {
 
     //searching will be the same as the look-up it will just do something different when it finds it
@@ -493,13 +481,14 @@ void updateAddress() {
     }
 
 }
+***/
 
 struct address_t *lookUpAddress() {
 
     //this might need to return an int for usage in update and delete address functions
     char alias[50];
-    struct address_t *ptr = head;
-    struct address_t *tmp = NULL;
+    // struct address_t *ptr = head;
+    // struct address_t *tmp = NULL;
     
     //Prompt for alias...
        
@@ -510,22 +499,17 @@ struct address_t *lookUpAddress() {
     printf("%s\n", alias);
     //I believe that this adds a whitespace that we need so I am including it here too so strings stay consistent
     sscanf(alias, "%s\n", alias);
-    //Iterate through all values to find searched value in ptr
-    while(ptr != NULL) {
-        if( strcmp(ptr->alias, alias) == 0 ) {
-            printf("\nALIAS FOUND!\n");
-            printf("The address for alias:%s is %d.%d.%d.%d\n", ptr->alias, ptr->octet[0], ptr->octet[1], ptr->octet[2], ptr->octet[3]);
-            return ptr;
-            break;
-        }
-        else {
-            ptr = ptr->next;
-        }
+
+    struct address_t *tmp = searchForAlias(head, alias);
+
+    if ( strcmp(tmp->alias, alias) == 0) {
+        printf("The address for alias:%s is %d.%d.%d.%d\n", tmp->alias, tmp->octet[0], tmp->octet[1], tmp->octet[2], tmp->octet[3]);
+        return tmp;
     }
     printf("\nError! Alias does not exist in list!\n");
     return NULL;
 }
-***/
+
 
 void searchForDups(struct address_t* root, int octet[4], char alias[11]) {
     
