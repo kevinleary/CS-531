@@ -34,12 +34,12 @@ int global_count = 0;
 void createListFromFile();              // -- working
 void displayList(struct address_t* node); // --  working
 void addAddress();                      // -- working 
-struct address_t *lookUpAddress();      // -- 
-void updateAddress();                   // -- 
-void deleteAddress();                   // -- 
+struct address_t *lookUpAddress();      // -- working
+void updateAddress();                   // -- not really working
+void deleteAddress();                   // -- working
 void displayAliasforLocation();         // -- working
 void saveToFile();                      // -- working
-// void menu();      
+void menu();      
 
 //BST Functions
 struct address_t *createNode(int octet0, int octet1, int octet2, int octet3, char alias[11]);
@@ -57,41 +57,12 @@ struct address_t* deleteNode(struct address_t* node, char alias[11]);
 
 int main() {
 
-    // menu();
-    
-    createListFromFile();
-    // displayList(head);
-    // printf("\n\n");
-    // struct address_t* test = searchForNode(head, "platte");
-    // displayList(test);
-    // printf("\n\n");
-    struct address_t *head2= (struct address_t*)malloc(sizeof(struct address_t));
-    // copyNode(head2, head);
-    // displayList(head2);
-    // doesn't work with head node for some reason???
-    displayList(head);
-    // head = insert(head, 123, 213, 123, 12, "test");
-    printf("\n\n");
-    // head2 = deleteNode(head, "test");
-    // displayList(head2);
-    // saveToFile();
-    // displayAliasforLocation();
-    // addAddress();
-    // displayList(head);
-    head2 = lookUpAddress();
-    displayList(head2);
-    deleteAddress();
-    displayList(head);
-    //test depth and hegit -- working
-    // head = insert(head, 123, 213, 123, 12, "another");
-    // head = insert(head, 123, 213, 123, 12, "here");
-
-    // displayList(head);
+    menu();
 
     return 0;
 }
 
-/***
+
 void menu() {
 
     int exit, choice = 0;
@@ -120,7 +91,7 @@ void menu() {
                 deleteAddress();
                 break;
             case 5 :
-                displayList();
+                displayList(head);
                 break;
             case 6 : 
                 displayAliasforLocation();
@@ -137,7 +108,7 @@ void menu() {
         }
     }
 }
-****/
+
 
 /****
  * 
@@ -423,20 +394,20 @@ void deleteAddress() {
 
 }
 
-/***
+
 void updateAddress() {
 
     //searching will be the same as the look-up it will just do something different when it finds it
     //I think that lookup should be reused here
     // char alias[] = lookUpAddress();
-    int exit, dup = 0;
+    int exit = 0;
     char ip[17];
     struct address_t *found = lookUpAddress();
-    struct address_t *ptr = head;
+    // struct address_t *ptr = head;
+    printf("here\n");
     struct address_t *update = (struct address_t*)malloc(sizeof(struct address_t));
 
     if (found != NULL) {
-
         while ( exit != 1 ) {
             printf("Enter the updated IPv4 address for %s: ", found->alias);
             fgets(ip, 17, stdin);  
@@ -444,6 +415,7 @@ void updateAddress() {
             sscanf(ip, "%d.%d.%d.%d\n", &update->octet[0], &update->octet[1], &update->octet[2], &update->octet[3]);
             //check for octet out of range 0-255
             strcpy(update->alias, found->alias);
+            printf("%d.%d.%d.%d %s\n", update->octet[0], update->octet[1], update->octet[2], update->octet[3], update->alias);
             for (int i = 0; i < 4; i++) {
 
                 if ( update->octet[i] > 255 || update->octet[i] < 0 ) {
@@ -456,39 +428,37 @@ void updateAddress() {
 
             }
 
-            while ( ptr != NULL ) {
-            // check all octets 
+            searchForDups(head, update->octet, "");
+            if (global_count == 1) {
+                printf("Error: Address is a duplicate!\n");
+                exit = 1;
+            } 
 
-                if (update->octet[0] == ptr->octet[0] && update->octet[1] == ptr->octet[1] && update->octet[2] == ptr->octet[2] && update->octet[3] == ptr->octet[3]) {
-                    printf("Address is a duplicate! Please re-enter a new adress for alias %s\n", found->alias);
-                    dup = 1;
-                    break;
-                } else {
-                    ptr = ptr->next;
-                    exit = 1;
-                }
-            }
         }
 
-        if ( dup != 1 ) {
+        if ( global_count != 1 ) {
             printf("Alias %s IPv4 address %d.%d.%d.%d is now %d.%d.%d.%d\n", found->alias, found->octet[0], found->octet[1], found->octet[2], found->octet[3], update->octet[0], update->octet[1], update->octet[2], update->octet[3]);
             //set new octet values
             for (int i = 0; i < 4; i++) {
                 found->octet[i] = update->octet[i];
             }
+            copyNode(update, found);
+            deleteNode(head, update->alias);
+            insert(head, update->octet[0], update->octet[1], update->octet[2], update->octet[3], update->alias);
         }
-
+        //reset global var
+        global_count = 0;
     }
 
 }
-***/
+
 
 struct address_t *lookUpAddress() {
 
     //this might need to return an int for usage in update and delete address functions
     char alias[50];
     // struct address_t *ptr = head;
-    // struct address_t *tmp = NULL;
+    // struct address_t *tmp = (struct address_t*)malloc(sizeof(struct address_t));
     
     //Prompt for alias...
        
@@ -501,13 +471,14 @@ struct address_t *lookUpAddress() {
     sscanf(alias, "%s\n", alias);
 
     struct address_t *tmp = searchForAlias(head, alias);
-
-    if ( strcmp(tmp->alias, alias) == 0) {
+    // printf("%s\n", tmp->alias);
+    if ( tmp != NULL && strcmp(tmp->alias, alias) == 0) {
         printf("The address for alias:%s is %d.%d.%d.%d\n", tmp->alias, tmp->octet[0], tmp->octet[1], tmp->octet[2], tmp->octet[3]);
         return tmp;
+    } else {
+        printf("\nError! Alias does not exist in list!\n");
+        return NULL;
     }
-    printf("\nError! Alias does not exist in list!\n");
-    return NULL;
 }
 
 
@@ -530,7 +501,7 @@ void searchForDups(struct address_t* root, int octet[4], char alias[11]) {
         }
         
         //now check for alias
-        if ( strcmp(root->alias, alias) == 0) {
+        if ( strcmp(root->alias, alias) == 0 && strcmp(alias, "") != 0) {
             printf("\nError: Alias already exists in list!\n");
             global_count = 1;
             return;
